@@ -541,7 +541,7 @@ final class LaravelAddressParser
     /**
      * Normalize unit/apartment indicator casing.
      * Keeps leading '#' units as-is (e.g. #12) while uppercasing others (e.g. Apt 4B -> APT 4B).
-     * 
+     *
      * @param  string|null  $unit  The unit/apartment string
      * @return string|null The normalized unit/apartment string
      */
