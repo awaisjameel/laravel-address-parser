@@ -52,7 +52,10 @@
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
+        "format": "vendor/bin/pint",
+        "cleanup": [
+            "@php vendor/bin/pint --parallel"
+        ]
     },
     "config": {
         "sort-packages": true,
