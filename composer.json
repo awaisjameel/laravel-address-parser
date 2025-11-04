@@ -2,7 +2,7 @@
     "name": "awaisjameel/laravel-address-parser",
     "description": "A Laravel package for parsing US addresses.",
     "type": "library",
-    "version": "1.0.0",
+    "version": "v1.0.0",
     "keywords": [
         "laravel",
         "laravel-address-parser",
