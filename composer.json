@@ -1,6 +1,8 @@
 {
     "name": "awaisjameel/laravel-address-parser",
     "description": "A Laravel package for parsing US addresses.",
+    "type": "library",
+    "version": "1.0.0",
     "keywords": [
         "laravel",
         "laravel-address-parser",
@@ -12,15 +14,15 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "awaisjameel",
             "email": "awais.jameel@ymail.com",
+            "name": "awaisjameel",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "7.4|^8.2",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0"
+        "illuminate/contracts": "^10.0||^11.0||^12.0"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
