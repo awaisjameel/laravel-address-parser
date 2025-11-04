@@ -2,9 +2,9 @@
 
 namespace Awaisjameel\LaravelAddressParser\Tests;
 
+use Awaisjameel\LaravelAddressParser\LaravelAddressParserServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Awaisjameel\LaravelAddressParser\LaravelAddressParserServiceProvider;
 
 class TestCase extends Orchestra
 {
