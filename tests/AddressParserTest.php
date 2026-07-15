@@ -44,6 +44,42 @@ dataset('valid_addresses_no_commas', [
             'county' => null,
         ],
     ],
+    // City name starting with a unit indicator prefix (FL) must not be treated as a unit
+    '123 Main St Florence AL 35630' => [
+        '123 Main St Florence AL 35630',
+        [
+            'address1' => '123 Main St',
+            'address2' => null,
+            'city' => 'Florence',
+            'state' => 'AL',
+            'zip' => '35630',
+            'county' => null,
+        ],
+    ],
+    // City name starting with a unit indicator prefix (STE) must not be treated as a unit
+    '456 Oak Ave Sterling VA 20164' => [
+        '456 Oak Ave Sterling VA 20164',
+        [
+            'address1' => '456 Oak Ave',
+            'address2' => null,
+            'city' => 'Sterling',
+            'state' => 'VA',
+            'zip' => '20164',
+            'county' => null,
+        ],
+    ],
+    // Multibyte characters in the street name must not shift parsing offsets
+    '123 Peña Blvd Denver CO 80249' => [
+        '123 Peña Blvd Denver CO 80249',
+        [
+            'address1' => '123 Peña Blvd',
+            'address2' => null,
+            'city' => 'Denver',
+            'state' => 'CO',
+            'zip' => '80249',
+            'county' => null,
+        ],
+    ],
 ]);
 
 dataset('valid_addresses_with_commas', [
@@ -88,6 +124,17 @@ dataset('valid_addresses_with_commas', [
             'city' => 'Springfield',
             'state' => 'IL',
             'zip' => '62704',
+            'county' => null,
+        ],
+    ],
+    'Hash unit embedded in first comma part' => [
+        '77 Broadway St #12, Gotham, NJ 07001',
+        [
+            'address1' => '77 Broadway St',
+            'address2' => '#12',
+            'city' => 'Gotham',
+            'state' => 'NJ',
+            'zip' => '07001',
             'county' => null,
         ],
     ],

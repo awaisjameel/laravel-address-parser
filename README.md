@@ -57,11 +57,11 @@ Laravel Address Parser helps you take messy user‑submitted single line US addr
 
 ## Requirements
 
-| Component                      | Version                             |  |     |  |     |
-| ------------------------------ | ----------------------------------- | - | --- | - | --- |
-| PHP                            | 7.4 or ^8.2                         |  |     |  |     |
-| Laravel (illuminate/contracts) | ^10                                 |  | ^11 |  | ^12 |
-| Extension dependencies         | None beyond standard PHP + mbstring |  |     |  |     |
+| Component                      | Version                       |
+| ------------------------------ | ----------------------------- |
+| PHP                            | ^8.2 (tested up to 8.5)       |
+| Laravel (illuminate/contracts) | ^10, ^11, ^12 or ^13          |
+| Extension dependencies         | `ext-mbstring`                |
 
 ---
 
@@ -275,6 +275,7 @@ try {
 | Scenario                              | Behavior                                                      |
 | ------------------------------------- | ------------------------------------------------------------- |
 | Missing street suffix & no commas     | Throws exception                                              |
+| City starting like a unit word (`Florence`, `Sterling`) | Parsed as city (unit words must match exactly)     |
 | Excess whitespace                     | Normalized                                                    |
 | Periods after abbreviations (`St.`) | Removed                                                       |
 | Mixed case units (`aPt 4b`)         | Uppercased →`APT 4B`                                       |

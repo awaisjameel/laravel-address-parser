@@ -144,7 +144,7 @@ final class LaravelAddressParser
     public static function parseAddressString(string $address): array
     {
         // Input validation
-        if (in_array(mb_trim($address), ['', '0'], true)) {
+        if (in_array(trim($address), ['', '0'], true)) {
             throw new AddressParsingException('Address cannot be empty');
         }
 
@@ -152,7 +152,7 @@ final class LaravelAddressParser
         $address = self::normalizeAddress($address);
 
         // Extract state and ZIP from the end
-        if (in_array(preg_match('/\b([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/i', $address, $matches, PREG_OFFSET_CAPTURE), [0, false], true)) {
+        if (preg_match('/\b([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/i', $address, $matches, PREG_OFFSET_CAPTURE) !== 1) {
             throw new AddressParsingException('Cannot find valid state and ZIP at the end of the address');
         }
 
@@ -168,8 +168,8 @@ final class LaravelAddressParser
             throw new AddressParsingException("Invalid ZIP code: '{$zip}'");
         }
 
-        // Get the part before state and ZIP
-        $beforeState = mb_rtrim(mb_substr($address, 0, $stateOffset), ', ');
+        // Get the part before state and ZIP (preg offsets are byte offsets, so use byte-based substr)
+        $beforeState = rtrim(substr($address, 0, $stateOffset), ', ');
 
         if ($beforeState === '' || $beforeState === '0') {
             throw new AddressParsingException('Address missing components before state and ZIP');
@@ -187,7 +187,7 @@ final class LaravelAddressParser
             // Find the rightmost street suffix
             $suffixIndex = -1;
             for ($i = count($upperWords) - 1; $i > 0; $i--) {
-                if (in_array($upperWords[$i], self::$streetSuffixes)) {
+                if (in_array($upperWords[$i], self::$streetSuffixes, true)) {
                     $suffixIndex = $i;
                     break;
                 }
@@ -212,19 +212,16 @@ final class LaravelAddressParser
             $address1 = $separated['address1'];
             $address2 = $separated['address2'];
 
-            // Check if what we thought was city actually starts with a unit indicator (unit after suffix)
+            // Check if what we thought was city actually starts with a unit indicator (unit after suffix).
+            // Word indicators must match the whole word exactly — prefix matching would swallow
+            // city names like "Florence" (FL), "Sterling" (STE) or "Lots" (LOT). Only '#' may be
+            // attached to its unit number (e.g. "#12").
             $cityWords = explode(' ', $city);
             $firstWordUpper = mb_strtoupper($cityWords[0]);
-            $unitPrefix = '';
-            foreach (self::$unitIndicators as $ind) {
-                $indUpper = mb_strtoupper((string) $ind);
-                if (mb_strpos($firstWordUpper, $indUpper) === 0) {
-                    $unitPrefix = $ind;
-                    break;
-                }
-            }
+            $isUnitWord = str_starts_with($firstWordUpper, '#')
+                || in_array($firstWordUpper, self::$unitIndicators, true);
 
-            if ($unitPrefix !== '') {
+            if ($isUnitWord) {
                 $unitParts = array_shift($cityWords); // e.g. Apt or #12
                 // Only append second token if it contains at least one digit (unit number like 4B, 12, 2A)
                 if (count($cityWords) > 0 && preg_match('/^(?=.*\d)[\w-]{1,10}$/i', $cityWords[0])) {
@@ -338,7 +335,7 @@ final class LaravelAddressParser
      */
     public static function isValidState(string $state): bool
     {
-        return in_array(mb_strtoupper($state), self::getValidStates());
+        return in_array(mb_strtoupper($state), self::getValidStates(), true);
     }
 
     /**
@@ -392,7 +389,7 @@ final class LaravelAddressParser
     private static function normalizeAddress(string $address): string
     {
         // Trim and normalize whitespace
-        $address = mb_trim($address);
+        $address = trim($address);
         $address = preg_replace('/\s+/', ' ', $address);
 
         // Remove periods after common abbreviations
@@ -401,9 +398,7 @@ final class LaravelAddressParser
         $address = preg_replace($pattern, '$1', (string) $address);
 
         // Remove any trailing periods or commas
-        $address = mb_rtrim($address, '.,');
-
-        return $address;
+        return rtrim($address, '.,');
     }
 
     /**
@@ -416,10 +411,10 @@ final class LaravelAddressParser
      */
     private static function parseStateAndZip(string $stateZip): array
     {
-        $stateZip = mb_trim($stateZip);
+        $stateZip = trim($stateZip);
         $stateZipUpper = mb_strtoupper($stateZip);
 
-        if (in_array(preg_match('/^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/', $stateZipUpper, $matches), [0, false], true)) {
+        if (preg_match('/^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/', $stateZipUpper, $matches) !== 1) {
             throw new AddressParsingException(
                 "Invalid state/ZIP format: '{$stateZip}'. Expected format: 'ST 12345' or 'ST 12345-6789'"
             );
@@ -486,12 +481,14 @@ final class LaravelAddressParser
         $address1 = $address;
         $address2 = null;
 
-        // Pattern to match unit indicators at the end
-        $unitPattern = '/\b('.implode('|', array_map('preg_quote', self::$unitIndicators)).')\b\s*(.+)$/i';
+        // Pattern to match unit indicators followed by a unit value. Word indicators need
+        // word boundaries; '#' is matched separately since '\b#' can never match after a space.
+        $wordIndicators = array_diff(self::$unitIndicators, ['#']);
+        $unitPattern = '/(?:\b(?:'.implode('|', array_map('preg_quote', $wordIndicators)).')\b|#)\s*\S.*$/i';
 
-        if (preg_match($unitPattern, $address, $matches)) {
-            $beforeUnit = mb_trim(mb_substr($address, 0, mb_strpos($address, $matches[0])));
-            $unitInfo = mb_trim($matches[0]);
+        if (preg_match($unitPattern, $address, $matches, PREG_OFFSET_CAPTURE) === 1) {
+            $beforeUnit = trim(substr($address, 0, $matches[0][1]));
+            $unitInfo = trim($matches[0][0]);
 
             if ($beforeUnit !== '' && $beforeUnit !== '0') {
                 $address1 = $beforeUnit;
@@ -513,14 +510,14 @@ final class LaravelAddressParser
      */
     private static function isValidStreetAddress(string $address): bool
     {
-        $address = mb_trim($address);
+        $address = trim($address);
 
         if ($address === '' || $address === '0') {
             return false;
         }
 
         // Must contain at least one number (house number)
-        if (in_array(preg_match('/\d/', $address), [0, false], true)) {
+        if (preg_match('/\d/', $address) !== 1) {
             return false;
         }
 
@@ -529,7 +526,7 @@ final class LaravelAddressParser
 
         // Check if it contains a recognized street suffix
         foreach (self::$streetSuffixes as $suffix) {
-            if (in_array($suffix, $words)) {
+            if (in_array($suffix, $words, true)) {
                 return true;
             }
         }
@@ -550,7 +547,7 @@ final class LaravelAddressParser
         if ($unit === null) {
             return null;
         }
-        $unit = mb_trim($unit);
+        $unit = trim($unit);
         if ($unit === '') {
             return null;
         }
