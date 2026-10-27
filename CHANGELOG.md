@@ -2,6 +2,28 @@
 
 All notable changes to `laravel-address-parser` are documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-10-26
+
+- Enforce Pint, PHPStan, strict manifest validation and dependency audits on pull requests and pushes; consolidate duplicate/automatic-formatting workflows.
+
+### Changed
+
+- **Breaking:** require maintained Laravel 12 or 13; retain PHP 8.2–8.5 support.
+- Update dependencies through current stable test tooling, including Pest 5,
+  Testbench 11, and Larastan 3; select compatible test versions on older PHP.
+- Declare the runtime Illuminate support component and remove redundant test
+  dependencies, factory setup, and unused workbench mappings.
+- Strengthen array shapes and static analysis to PHPStan level 8.
+- Upgrade CI actions and cover maintained framework/runtime combinations.
+
+### Fixed
+
+- Report normalization errors as `AddressParsingException` instead of passing
+  nullable regex results into string functions.
+- Correct the documented configuration publishing tag to `address-parser-config`
+  and verify facade resolution and publishing paths.
+- Exclude installed dependencies and local test artifacts from release archives.
+
 ## [1.1.0] - 2026-07-15
 
 ### Added
@@ -39,5 +61,6 @@ All notable changes to `laravel-address-parser` are documented in this file. Thi
 -   This is a format parser, not an address existence validator (no USPS/CASS integration yet).
 -   Future roadmap will introduce configurable suffixes/unit indicators and integration hooks.
 
+[2.0.0]: https://github.com/awaisjameel/laravel-address-parser/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/awaisjameel/laravel-address-parser/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/awaisjameel/laravel-address-parser/releases/tag/v1.0.0

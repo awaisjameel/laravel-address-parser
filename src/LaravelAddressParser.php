@@ -8,6 +8,8 @@ final class LaravelAddressParser
 {
     /**
      * Common street suffixes for address validation
+     *
+     * @var list<string>
      */
     private static array $streetSuffixes = [
         'ST',
@@ -51,6 +53,8 @@ final class LaravelAddressParser
 
     /**
      * Common apartment/unit indicators
+     *
+     * @var list<string>
      */
     private static array $unitIndicators = [
         '#',
@@ -72,6 +76,8 @@ final class LaravelAddressParser
 
     /**
      * Valid US state abbreviations
+     *
+     * @var list<string>
      */
     private static array $validStates = [
         'AL',
@@ -341,7 +347,7 @@ final class LaravelAddressParser
     /**
      * Get all valid state abbreviations
      *
-     * @return array Array of valid state abbreviations
+     * @return list<string> Array of valid state abbreviations
      */
     public static function getValidStates(): array
     {
@@ -351,7 +357,7 @@ final class LaravelAddressParser
     /**
      * Format a parsed address back into a 1 liner string
      *
-     * @param  array{address1: string, address2: ?string, city: string, state: string, zip: string}  $addressComponents  The parsed address components
+     * @param  array{address1?: string, address2?: ?string, city?: string, state?: string, zip?: string}  $addressComponents  The parsed address components
      * @return string The formatted address string
      */
     public static function formatAddress(array $addressComponents): string
@@ -390,12 +396,14 @@ final class LaravelAddressParser
     {
         // Trim and normalize whitespace
         $address = trim($address);
-        $address = preg_replace('/\s+/', ' ', $address);
+        $address = preg_replace('/\s+/', ' ', $address)
+            ?? throw new AddressParsingException('Unable to normalize address whitespace');
 
         // Remove periods after common abbreviations
         $abbrevs = array_merge(self::$streetSuffixes, self::$unitIndicators, self::getValidStates());
         $pattern = '/\b('.implode('|', array_map('preg_quote', $abbrevs)).')\./i';
-        $address = preg_replace($pattern, '$1', (string) $address);
+        $address = preg_replace($pattern, '$1', $address)
+            ?? throw new AddressParsingException('Unable to normalize address abbreviations');
 
         // Remove any trailing periods or commas
         return rtrim($address, '.,');
@@ -405,7 +413,7 @@ final class LaravelAddressParser
      * Parse state and ZIP code from the last part of the address
      *
      * @param  string  $stateZip  The state and ZIP portion
-     * @return array Array with 'state' and 'zip' keys
+     * @return array{state: string, zip: string} Array with 'state' and 'zip' keys
      *
      * @throws AddressParsingException If format is invalid
      */
@@ -434,8 +442,8 @@ final class LaravelAddressParser
     /**
      * Parse address lines into address1 and optional address2
      *
-     * @param  array  $addressParts  Array of address parts
-     * @return array Array with 'address1' and 'address2' keys
+     * @param  list<string>  $addressParts  Array of address parts
+     * @return array{address1: string, address2: ?string} Array with 'address1' and 'address2' keys
      *
      * @throws AddressParsingException If address is invalid
      */
@@ -474,7 +482,7 @@ final class LaravelAddressParser
      * Separate unit information from the main address line
      *
      * @param  string  $address  The address line
-     * @return array Array with separated 'address1' and 'address2'
+     * @return array{address1: string, address2: ?string} Array with separated 'address1' and 'address2'
      */
     private static function separateUnitFromAddress(string $address): array
     {

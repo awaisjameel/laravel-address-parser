@@ -21,20 +21,16 @@
     "require": {
         "php": "^8.2",
         "ext-mbstring": "*",
-        "spatie/laravel-package-tools": "^1.92.7",
-        "illuminate/contracts": "^10.0||^11.0||^12.0||^13.0"
+        "illuminate/support": "^12.0||^13.0",
+        "spatie/laravel-package-tools": "^1.93.3"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
-        "nunomaduro/collision": "^8.8",
-        "larastan/larastan": "^3.8",
-        "orchestra/testbench": "^9.0||^10.0||^11.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-arch": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0"
+        "larastan/larastan": "^3.13.2",
+        "orchestra/testbench": "^10.12||^11.3",
+        "pestphp/pest": "^3.0||^4.7.8||^5.3.3",
+        "phpstan/extension-installer": "^1.4.3",
+        "phpstan/phpstan-deprecation-rules": "^2.0.5"
     },
     "autoload": {
         "psr-4": {
@@ -43,8 +39,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Awaisjameel\\LaravelAddressParser\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "Awaisjameel\\LaravelAddressParser\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -75,6 +70,6 @@
             }
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

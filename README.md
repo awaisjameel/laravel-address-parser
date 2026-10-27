@@ -5,7 +5,6 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/awaisjameel/laravel-address-parser.svg?style=flat-square)](https://packagist.org/packages/awaisjameel/laravel-address-parser)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/awaisjameel/laravel-address-parser/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/awaisjameel/laravel-address-parser/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/awaisjameel/laravel-address-parser/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/awaisjameel/laravel-address-parser/actions?query=workflow%3A)
 [![Total Downloads](https://img.shields.io/packagist/dt/awaisjameel/laravel-address-parser.svg?style=flat-square)](https://packagist.org/packages/awaisjameel/laravel-address-parser)
 
 Laravel Address Parser helps you take messy user‑submitted single line US addresses and split them into reliable fields: `address1`, `address2` (unit), `city`, `state`, `zip` and optionally `county`. It applies pragmatic heuristics—street suffix detection, unit indicator extraction, normalization (whitespace + periods), and validation of state + ZIP formats—without depending on external APIs. Ideal for form ingestion, ETL pipelines, quick data cleanup, and pre‑validation before geocoding.
@@ -60,8 +59,13 @@ Laravel Address Parser helps you take messy user‑submitted single line US addr
 | Component                      | Version                       |
 | ------------------------------ | ----------------------------- |
 | PHP                            | ^8.2 (tested up to 8.5)       |
-| Laravel (illuminate/contracts) | ^10, ^11, ^12 or ^13          |
+| Laravel (illuminate/support)   | ^12 or ^13                    |
 | Extension dependencies         | `ext-mbstring`                |
+
+Laravel 12 supports PHP 8.2–8.5; Laravel 13 requires PHP 8.3–8.5.
+Version 2 drops Laravel 10 and 11. Its parsing API and heuristics remain unchanged.
+Development installs select the latest compatible Pest release, including Pest 5
+on PHP 8.4+ with Laravel 13.
 
 ---
 
@@ -80,7 +84,7 @@ The package auto‑discovers. No manual provider registration required.
 Currently the config file is a placeholder for future tuning (custom suffixes, unit indicators, etc.). You can publish it now:
 
 ```bash
-php artisan vendor:publish --tag="laravel-address-parser-config"
+php artisan vendor:publish --tag="address-parser-config"
 ```
 
 Published file at `config/address-parser.php`:
