@@ -5,6 +5,8 @@ namespace Awaisjameel\LaravelAddressParser\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @mixin \Awaisjameel\LaravelAddressParser\LaravelAddressParser
+ *
  * @see \Awaisjameel\LaravelAddressParser\LaravelAddressParser
  */
 class LaravelAddressParser extends Facade
